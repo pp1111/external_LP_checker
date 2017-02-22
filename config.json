@@ -1,0 +1,20 @@
+{
+    "email": {
+        "enabled": false,
+        "timeout": 30000
+    },
+    "logs": {
+        "dir": "./logs/",
+        "daily": "report.log",
+        "watchdog": "watchdog.log"
+    },
+    "interval": 5,
+    "dailyReportTime": "00 00 24 * * *",
+    "retryLimit": 5,
+    "server": {
+        "port": 5006
+    },
+    "pingEndpoints": [
+        "http://amoney.pl"
+    ]
+}
