@@ -11,6 +11,8 @@ const Ping = require('./lib/check');
 const CronJob = require('cron').CronJob;
 const logger = require('./lib/logger');
 
+var bodyParser = require('body-parser')
+
 var argv = require('minimist')(process.argv.slice(2));
 var CONFIG_FILE_PATH = argv.config || process.env.CON_CONFIG;
 
@@ -37,6 +39,7 @@ process.on('uncaughtException', (error) => {
 });
 
 app.listen(config.server.port);
+app.use(express.static(__dirname + '/controllers'));
 
 const reportPath = config.logs.dir + config.logs.daily;
 
@@ -129,10 +132,27 @@ var checkIfAllPingsUpdated;
     }
 }
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded())
+
+// parse application/json
+app.use(bodyParser.json())
+
 app.options('/info', cors());
 app.get('/info', cors(), (req,res) => {
     res.send(serverInfo.join("\n").toString() + '\n');
 })
+
+app.get('/', function(req, res) {
+    res.sendfile('./views/index.html');
+});
+
+var website = require('./routes/website');
+
+app.get('/website', website.findAll);
+app.get('/website/:id', website.findById);
+app.post('/website', website.addproduct);
+app.delete('/website/:id', website.deleteproduct);
 
 config.pingEndpoints.forEach( website => {
     let monitor = new Ping ({
